@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.it.foodmall.dao.UserDao">
+    <select id="findUserByNameAndPassword" resultType="User">
+        select * from user where username = #{username} and password = #{password}
+    </select>
+
+    <update id="update">
+        update user
+        <set>
+            <if test="username != null">
+                username = #{username},
+            </if>
+            <if test="password != null">
+                password = #{password},
+            </if>
+            <if test="avatar != null">
+                avatar = #{avatar}
+            </if>
+            <if test="account != null">
+                account = #{account},
+            </if>
+            <if test="lastLogin != null">
+                lastLogin = #{lastLogin},
+            </if>
+        </set>
+        where UID = #{UID}
+    </update>
+
+    <select id="findUserBySingleName" resultType="int">
+        select count(*) from user where username = #{username}
+    </select>
+
+    <insert id="register" parameterType="User">
+        insert into user(UID,username,password,createTime)
+        values (#{UID},#{username},#{password},#{createTime})
+    </insert>
+
+    <select id="findUserByUID" resultType="User">
+        select UID,username,avatar,account,createTime,lastLogin
+        from
+        user
+        where UID = #{UID}
+    </select>
+
+<!--    <update id="ChargeMoney" parameterType="User">-->
+<!--        update user-->
+<!--        <set>-->
+<!--            <if test="account!=null">-->
+<!--                account = #{account},-->
+<!--            </if>-->
+<!--            <if test="chargeMoney != null">-->
+<!--                chargeMoney = #{chargeMoney},-->
+<!--            </if>-->
+<!--            <if test="chargeTime != null">-->
+<!--                chargeTime = #{chargeTime}-->
+<!--            </if>-->
+<!--        </set>-->
+<!--        where UID = #{UID}-->
+<!--    </update>-->
+    <select id="queryAllUser" resultType="User">
+        select UID,username,account,createTime,lastLogin
+        from
+        user
+    </select>
+
+    <delete id="deleteUserById" >
+        delete from user where UID = #{uid}
+    </delete>
+
+
+
+     <insert id="ChargeMoney" parameterType="User" useGeneratedKeys="true" keyColumn="UID">
+         insert into charge(chargeTime,chargeMoney,account,UID)
+         values (#{chargeTime},#{chargeMoney},#{account},#{UID})
+     </insert>
+</mapper>

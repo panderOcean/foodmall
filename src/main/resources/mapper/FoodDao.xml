@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.it.foodmall.dao.FoodDao">
+    <resultMap id="FoodName" type="Food">
+        <result property="foodName" column="foodName"/>
+        <result property="FID" column="FID"/>
+    </resultMap>
+
+    <select id="queryFood" resultType="Food">
+        select * from food
+    </select>
+
+    <insert id="addFood" parameterType="Food">
+        insert into Food values (#{FID},#{foodName},#{price},#{category},#{photo},#{purchase},#{evaluate},#{evaTimes})
+    </insert>
+
+    <select id="queryFoodByCategory" resultType="Food">
+        select * from food where category = #{category};
+    </select>
+
+    <update id="update" parameterType="Food">
+        update food
+        <set>
+            <if test="purchase != null">
+                purchase = #{purchase},
+            </if>
+            <if test="grade != null">
+                grade = #{grade},
+            </if><if test="evaTimes != null">
+                evaTimes = #{evaTimes},
+            </if>
+        </set>
+        where FID = #{FID}
+    </update>
+
+    <select id="selectFoodByFID" resultType="Food">
+        select FID, purchase,grade, evaTimes from food where FID = #{FID}
+    </select>
+
+    <select id="queryFoodByName" resultMap="FoodName">
+        select FID,foodName from food where foodName like CONCAT('%','${foodName}','%')
+    </select>
+
+    <select id="queryFoodDetailsById" resultType="Food">
+        select FID,foodName,price,category,photo,purchase,grade,evaTimes from food where FID = #{FID}
+    </select>
+
+</mapper>

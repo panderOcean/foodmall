@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.it.foodmall.dao.CartDao">
+
+    <resultMap id="CartFood" type="Cart">
+        <id property="CID" column="CID"/>
+        <result property="FID" column="FID"/>
+        <result property="UID" column="UID"/>
+        <result property="count" column="count"/>
+        <result property="cost" column="cost"/>
+        <association property="food" javaType="Food">
+            <result property="foodName" column="foodName"/>
+            <result property="price" column="price"/>
+            <result property="photo" column="photo"/>
+            <result property="FID" column="FID"/>
+            <result property="category" column="category"/>
+        </association>
+    </resultMap>
+   <insert id="addItem" useGeneratedKeys="true" keyColumn="CID">
+       insert into cart(FID,UID,count,cost)
+       values (#{FID},#{UID},#{count},#{cost})
+   </insert>
+    
+    <select id="queryItemByFIDAndUID" resultMap="CartFood">
+        select * from
+        cart c 
+        join food f 
+        on c.FID = F.FID
+        where c.FID = #{FID} and UID = #{UID}
+    </select>
+    
+    <select id="queryItem" resultMap="CartFood">
+        select * from cart c
+        join food f
+        on
+        c.FID = f.FID
+        where
+        UID = #{uid}
+    </select>
+    
+    <update id="update" parameterType="Cart">
+        update cart
+        <set>
+            <if test="count != null">
+                count = #{count},
+            </if>
+            <if test="cost != null">
+                cost = #{cost}
+            </if>
+        </set>
+        where CID = #{CID}
+    </update>
+
+    <delete id="deleteByCID">
+        delete from cart
+        where CID = #{CID}
+    </delete>
+
+    <select id="queryFoodAssociation" resultType="FoodAssociation">
+     SELECT f1.FID as F1_FID,f1.foodName as F1_foodName,f2.FID as F2_FID,f2.foodName as F2_foodName,f2.price as F2_price,f2.category as F2_category,f2.photo as F2_photo
+        FROM food f1
+        JOIN
+        association a
+        ON
+        f1.FID = a.FID1
+        JOIN
+        food f2
+        ON
+        a.FID2 = f2.FID
+        WHERE
+        f1.FID = #{FID};
+    </select>
+
+
+</mapper>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.it.foodmall.dao.OrderDao">
+
+    <resultMap id="orderItemWithFood" type="OrderItem">
+        <result property="OID" column="OID"/>
+        <result property="FID" column="FID"/>
+        <result property="UID" column="UID"/>
+        <result property="count" column="count"/>
+        <result property="money" column="money"/>
+        <result property="payTime" column="payTime"/>
+        <result property="status" column="status"/>
+        <association property="food" javaType="Food">
+            <result property="FID" column="FID"/>
+            <result property="foodName" column="foodName"/>
+            <result property="category" column="category"/>
+            <result property="photo" column="photo"/>
+        </association>
+    </resultMap>
+
+    <resultMap id="orderWithUser" type="Order">
+        <result property="OID" column="OID"/>
+        <result property="UID" column="UID"/>
+        <result property="createTime" column="createTime"/>
+        <result property="totalCost" column="totalCost"/>
+        <association property="user" javaType="User">
+            <result property="UID" column="UID"/>
+            <result property="username" column="username"/>
+            <result property="account" column="account"/>
+        </association>
+    </resultMap>
+    <insert id="insertOrder" parameterType="Order">
+       insert into orders
+       values (#{OID},#{UID},#{createTime},#{totalCost})
+   </insert>
+
+
+    <insert id="insertOrderItem" parameterType="OrderItem">
+       insert into orderItem
+       values
+       (#{OID},#{FID},#{UID},#{count},#{money},#{payTime},#{status})
+   </insert>
+
+    <select id="queryOrderByAdmin" resultMap="orderWithUser">
+      select * from orders o
+        join user u
+        on o.OID = u.UID
+   </select>
+
+    <select id="queryOrderByUser" resultType="Order">
+        select * from orders where UID = #{UID}
+    </select>
+
+    <select id="queryOrderMoneyByAdmin" resultType="String">
+        select sum(totalCost) from orders where createTime like concat(#{dateTime},'%')
+    </select>
+    <select id="queryOrderMoneyByUser" resultType="String">
+         select sum(totalCost) from orders where createTime like concat(#{dateTime},'%') and UID = #{UID}
+    </select>
+
+    <select id="queryOrderByOID" resultMap="orderItemWithFood">
+        select * from orderItem o join food f on o.FID = f.FID where OID = #{OID}
+    </select>
+
+    <update id="update">
+        update orderItem
+        <set>
+            <if test="status != null">
+                status = #{status}
+            </if>
+        </set>
+        where
+        OID = #{OID} and FID = #{FID}
+    </update>
+
+
+</mapper>

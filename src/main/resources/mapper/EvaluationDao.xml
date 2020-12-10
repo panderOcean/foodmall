@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.it.foodmall.dao.EvaluationDao">
+    <resultMap id="EvaluationFoodUser" type="Eva">
+        <result property="EID" column="EID"/>
+        <result property="FID" column="FID"/>
+        <result property="UID" column="UID"/>
+        <result property="eva" column="eva"/>
+        <result property="grade" column="grade"/>
+        <result property="evaluateTime" column="evaluateTime"/>
+        <association property="food" javaType="Food">
+            <result property="FID" column="FID"/>
+            <result property="foodName" column="foodName"/>
+            <result property="category" column="category"/>
+            <result property="photo" column="photo"/>
+            <result property="purchase" column="purchase"/>
+            <result property="evaluate" column="evaluate"/>
+            <result property="evaTimes" column="evaTimes"/>
+        </association>
+        <association property="user" javaType="User">
+            <result property="UID" column="UID"/>
+            <result property="username" column="username"/>
+            <result property="avatar" column="avatar"/>
+        </association>
+    </resultMap>
+
+    <select id="queryEvaByAdmin" resultMap="EvaluationFoodUser">
+        select * from evaluation e join food f on e.FID = f.FID join user u on e.UID = u.UID
+    </select>
+
+
+    <select id="queryEvaByUser" resultMap="EvaluationFoodUser">
+         select * from evaluation e join food f on e.FID = f.FID join user u on e.UID = u.UID where e.UID = #{UID}
+    </select>
+
+    <insert id="addEva" parameterType="Eva">
+        insert into evaluation values
+        (#{EID},#{FID},#{UID},#{eva},#{grade},#{evaluateTime})
+    </insert>
+
+    <select id="gradeAvg" resultType="Double">
+        SELECT AVG(grade) FROM evaluation WHERE FID = #{FID}
+    </select>
+</mapper>
